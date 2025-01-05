@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Password incorrect' });
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET , { expiresIn: '7d' });
     res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
@@ -53,7 +53,8 @@ router.post('/resetPassword', async (req, res) => {
 router.post('/updatePassword',async(req,res)=>{
   const {email,newPassword}=req.body
   try {
-    const user = await Resident.findOneAndUpdate({ email },{password:newPassword},{new:true});
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    const user = await Resident.findOneAndUpdate({ email },{password:hashedPassword},{new:true});
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
