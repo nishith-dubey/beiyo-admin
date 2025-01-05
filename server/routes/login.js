@@ -53,13 +53,10 @@ router.post('/resetPassword', async (req, res) => {
 router.post('/updatePassword',async(req,res)=>{
   const {email,newPassword}=req.body
   try {
-    const user = await Resident.findOne({ email });
+    const user = await Resident.findOneAndUpdate({ email },{password:newPassword},{new:true});
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
-    
-    user.password = newPassword;
-    await user.save();
     res.json({ message: 'Password reset successful' });
   } catch (error) {
     console.log(error);

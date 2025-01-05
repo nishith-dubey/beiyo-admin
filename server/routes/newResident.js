@@ -468,6 +468,53 @@ router.get('/resident/contractEnd', async (req, res) => {
   } 
 });
 
+router.get('/resident/export-contract-ended-residents', async (req, res) => {
+  try {
+    // Get the current month in the format 'YYYY-MM'
+    const nextMonth = moment().add(1, 'month').format('YYYY-MM');
+
+    // Find residents who are currently living and include their payments
+    const residents = await Resident.find({ living: 'current' }).populate('payments');
+
+    // Filter residents whose last payment's month is before the current month
+    const contractEndedResidents = residents.filter((resident) => {
+      const lastPayment = resident.payments[resident.payments.length - 1];
+      if (lastPayment && lastPayment.month) {
+        return moment(lastPayment.month, 'YYYY-MM').isBefore(nextMonth, 'month');
+      }
+      return false;
+    });
+
+    // Prepare data for Excel
+    const data = contractEndedResidents.map((resident) => ({
+      id: resident.id,
+      Name: resident.name,
+      Email: resident.email,
+      Hostel: resident.hostel, // Assuming 'hostel' is a string field
+      RoomNumber: resident.roomNumber, // Assuming 'roomNumber' is a number or string
+      LastPaymentMonth: resident.payments[resident.payments.length - 1].month,
+    }));
+
+    // Create a new workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Contract Ended Residents');
+
+    // Write the workbook to a buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // Set response headers for file download
+    res.setHeader('Content-Disposition', 'attachment; filename="ContractEndedResidents.xlsx"');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    // Send the Excel file
+    res.send(excelBuffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 router.put('/extendContract/:residentId',async(req,res)=>{
   try {
     const extendedMonth = req.body.extendedMonth;
