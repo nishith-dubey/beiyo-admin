@@ -34,6 +34,10 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
   const [deductionReason, setDeductionReason] = useState('');
   const [deductionError, setDeductionError] = useState('');
   const [deductionSuccess, setDeductionSuccess] = useState(false);
+  const [openContractDialog, setOpenContractDialog] = useState(false);
+  const [extendedMonths, setExtendedMonths] = useState('');
+  const [contractError, setContractError] = useState('');
+  const [contractSuccess, setContractSuccess] = useState(false);
 
   const {user}= useContext(AuthContext);
 
@@ -227,6 +231,47 @@ const handleOnlinePayment = (paymentId) => {
     }
   };
 
+    // Function to open the contract extension dialog
+    const handleOpenContractDialog = () => {
+      setOpenContractDialog(true);
+      setContractError('');
+      setContractSuccess(false);
+    };
+  
+    // Function to close the contract extension dialog
+    const handleCloseContractDialog = () => {
+      setOpenContractDialog(false);
+      setExtendedMonths('');
+    };
+  
+    // Function to handle contract extension
+    const handleExtendContract = () => {
+      if (!extendedMonths) {
+        setContractError('Please enter the number of months to extend.');
+        return;
+      }
+  
+      setLoading(true);
+      api
+        .put(
+          `https://beiyo-admin.in/api/newResident/extendContract/${residentId}`,
+          { extendedMonth: extendedMonths }
+        )
+        .then((response) => {
+          setLoading(false);
+          setContractSuccess(true);
+          setResident((prevResident) => ({
+            ...prevResident,
+            contractEndDate: response.data.newContractEndDate,
+          }));
+        })
+        .catch((error) => {
+          console.error('Error extending contract:', error);
+          setLoading(false);
+          setContractError('Failed to extend the contract. Please try again.');
+        });
+    };
+
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -370,6 +415,18 @@ const handleOnlinePayment = (paymentId) => {
               <Button variant="contained" color="primary" onClick={handleRoomSwapOpen} sx={{ mt: 3 }}>
                 Swap Room
               </Button>
+              <Typography color="text.secondary">
+                Contract End Date:{' '}
+                {new Date(resident.contractEndDate).toLocaleDateString()}
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleOpenContractDialog}
+                sx={{ mt: 3 }}
+              >
+                Extend Contract
+              </Button>
             </Box>
           ) : (
             <Typography color="text.secondary">No resident data available.</Typography>
@@ -476,6 +533,44 @@ const handleOnlinePayment = (paymentId) => {
           <Button onClick={handleCloseDeductionDialog} color="primary">Cancel</Button>
           <Button onClick={handleSubmitDeduction} color="secondary" disabled={loading}>
             Deduct
+          </Button>
+        </DialogActions>
+      </Dialog>
+       {/* Contract Extension Dialog */}
+       <Dialog open={openContractDialog} onClose={handleCloseContractDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Extend Contract</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="Extend by (months)"
+              value={extendedMonths}
+              onChange={(e) => setExtendedMonths(e.target.value)}
+              fullWidth
+              type="number"
+              required
+            />
+          </Box>
+          {contractError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {contractError}
+            </Alert>
+          )}
+          {contractSuccess && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              Contract extended successfully.
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseContractDialog} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleExtendContract}
+            color="secondary"
+            disabled={loading}
+          >
+            Extend
           </Button>
         </DialogActions>
       </Dialog>

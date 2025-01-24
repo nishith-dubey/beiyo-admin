@@ -40,7 +40,9 @@ const App = () => {
           <HostelList /></ProtectedRoute>
           } />
         {/* <Route path="/hostels/:id" element={<HostelForm />} /> */}
-      <Route path='/rooms' element={<ProtectedRoute><RoomList/></ProtectedRoute>}/>
+      <Route path='/rooms' element={<ProtectedRoute>
+        <RoomList/>
+        </ProtectedRoute>}/>
       <Route path='/resident' element={<ProtectedRoute> <ResidentList/> </ProtectedRoute>}/>
       <Route path='/payment' element={<ProtectedRoute><PaymentList/></ProtectedRoute>}/>
       <Route path='/monthly-summary' element={<ProtectedRoute><RentSummaryPage/></ProtectedRoute>}/> 
