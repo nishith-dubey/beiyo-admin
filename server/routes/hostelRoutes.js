@@ -63,6 +63,22 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/allDetails',async(req,res)=>{
+  try {
+    // await  totalRooms();
+    // await  totalBeds();
+    // await mappingResidentToHostel();
+    const { page = 1, limit = 10  } = req.params;
+    const hostels = await Hostel.find()
+    .sort({ siteTotalRemainingBeds: -1, name: 1 })
+    .skip((page - 1) * limit)
+    .limit(parseInt(limit));
+      res.json(hostels);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+})
+
 // Get a single hostel
 router.get('/:id', getHostel, (req, res) => {
   // totalRemainingBeds(req.params.id);
