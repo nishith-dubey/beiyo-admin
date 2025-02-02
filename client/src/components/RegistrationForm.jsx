@@ -526,7 +526,8 @@ const ResidentForm = () => {
                   Balance Due:
                 </h2>
                 <p className="text-xl font-semibold text-gray-900">
-                  ₹ {isNaN(dueAmount) ? 0 : dueAmount}
+                  ₹ {
+                  (!isNaN(dueAmount) && typeof dueAmount === "number")  ? dueAmount : 0}
                 </p>
               </div>
             </div>
