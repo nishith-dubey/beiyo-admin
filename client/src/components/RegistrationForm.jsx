@@ -198,6 +198,12 @@ const [invoiceData, setInvoiceData] = useState(null);
     setDueAmount(totalDue);
   };
 
+    // Function to toggle invoice visibility
+    const toggleInvoice = () => {
+      setShowInvoice((prev) => !prev);
+      form.resetFields();
+    };
+
   return (
     <div className="form-div" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
       <Form
@@ -218,13 +224,13 @@ const [invoiceData, setInvoiceData] = useState(null);
         <Form.Item name="mobileNumber" label="Mobile Number" rules={[{ required: true, message: 'Please enter the mobile number' }]}>
           <Input placeholder="Enter mobile number" />
         </Form.Item>
-        <Form.Item name="address" label="Address">
+        <Form.Item name="address" label="Address" rules={[{ required: true, message: 'Please enter the address' }]}>
           <Input.TextArea placeholder="Enter address" />
         </Form.Item>
-        <Form.Item name="parentsName" label="Parent's Name">
+        <Form.Item name="parentsName" label="Parent's Name" rules={[{ required: true, message: 'Please enter the name' }]}>
           <Input placeholder="Enter parent's name" />
         </Form.Item>
-        <Form.Item name="parentsMobileNo" label="Parent's Mobile Number">
+        <Form.Item name="parentsMobileNo" label="Parent's Mobile Number" rules={[{ required: true, message: 'Please enter the mobile number' }]}>
           <Input placeholder="Enter parent's mobile number" />
         </Form.Item>
 
@@ -251,7 +257,7 @@ const [invoiceData, setInvoiceData] = useState(null);
         <Form.Item name="dateJoined" label="Date Joined" rules={[{ required: true, message: 'Please select the joining date' }]}>
           <DatePicker style={{ width: '100%' }} onChange={handleDateChange} />
         </Form.Item>
-        <Form.Item name="contractTerm" label="Contract Term (Months)">
+        <Form.Item name="contractTerm" label="Contract Term (Months)"  rules={[{ required: true, message: 'Please Enter contract term' }]}>
           <InputNumber min={1} placeholder="Enter contract term" style={{ width: '100%' }} />
         </Form.Item>
        
@@ -332,8 +338,12 @@ const [invoiceData, setInvoiceData] = useState(null);
         </Form.Item>
       </Form>
 
+      <div>
       {showInvoice && invoiceData && (
   <div>
+     <button className="close-btn" onClick={toggleInvoice}>
+            ❌
+          </button>
   <div id="invoice-preview" className="invoice-preview">
     {/* <h2>Payment receipt of BEIYO</h2> */}
     <h2 className="invoice-title">Payment receipt of BEIYO</h2>
@@ -433,7 +443,7 @@ const [invoiceData, setInvoiceData] = useState(null);
     >Send via WhatsApp</button>
 </div>
 )}
-
+  </div>
     </div>
   );
 };
