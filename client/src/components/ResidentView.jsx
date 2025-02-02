@@ -144,7 +144,7 @@ const handleOnlinePayment = (paymentId) => {
   };
 
   const handleRoomSwap = () => {
-    if(user.uniqueId==='B3'||user.uniqueId==='B4'){
+    if(user.uniqueId==='B3'||user.uniqueId==='B4'||user.uniqueId==='B7'){
       if (newRoomId) {
         api.put(`https://beiyo-admin.in/api/rooms/roomSwap/${residentId}`, {
           oldRoomId:resident.roomNumberId,
@@ -166,7 +166,7 @@ const handleOnlinePayment = (paymentId) => {
   };
 
   const handleDeleteResident = () => {
-    if(user.uniqueId==='B3'||user.uniqueId==='B4'){
+    if(user.uniqueId==='B3'||user.uniqueId==='B4'||user.uniqueId==='B7'){
       if (residentId) {
         api.delete(`https://beiyo-admin.in/api/newResident/deleteResident/${residentId}`)
           .then(() => {
@@ -419,14 +419,14 @@ const handleOnlinePayment = (paymentId) => {
                 Contract End Date:{' '}
                 {new Date(resident.contractEndDate).toLocaleDateString()}
               </Typography>
-              <Button
+        {/* //      <Button
                 variant="contained"
                 color="primary"
                 onClick={handleOpenContractDialog}
                 sx={{ mt: 3 }}
               >
                 Extend Contract
-              </Button>
+              </Button> */}
             </Box>
           ) : (
             <Typography color="text.secondary">No resident data available.</Typography>

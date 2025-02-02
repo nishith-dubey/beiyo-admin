@@ -31,7 +31,7 @@ const HostelList = () => {
   const [openResidentDetail, setOpenResidentDetail] = useState(false);
   
   useEffect(() => {
-    api.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels/allDetails')
       .then(response => {
         setHostels(response.data);
       })
